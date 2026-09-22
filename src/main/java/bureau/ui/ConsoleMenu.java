@@ -1,15 +1,21 @@
 package bureau.ui;
 
+import bureau.exception.DatabaseException;
+import bureau.service.TableService;
+
 import java.io.PrintStream;
+import java.util.List;
 import java.util.OptionalInt;
 
 public class ConsoleMenu {
     private final ConsoleInput input;
     private final PrintStream output;
+    private final TableService tableService;
 
-    public ConsoleMenu(ConsoleInput input, PrintStream output) {
+    public ConsoleMenu(ConsoleInput input, PrintStream output, TableService tableService) {
         this.input = input;
         this.output = output;
+        this.tableService = tableService;
     }
 
     public void run() {
@@ -29,7 +35,7 @@ public class ConsoleMenu {
                 case 4 -> showUnavailableSection("Фильтрация и сортировка заказов");
                 case 5 -> showUnavailableSection("Статистика");
                 case 6 -> showUnavailableSection("Экспорт данных в Excel");
-                case 7 -> showUnavailableSection("Таблицы базы данных");
+                case 7 -> showTables();
                 case 0 -> {
                     output.println("До свидания!");
                     return;
@@ -52,6 +58,23 @@ public class ConsoleMenu {
         output.println("6. Экспорт данных в Excel");
         output.println("7. Вывести таблицы базы данных");
         output.println("0. Выход");
+    }
+
+    private void showTables() {
+        try {
+            List<String> tables = tableService.getTableNames();
+            if (tables.isEmpty()) {
+                output.println("В базе пока нет таблиц.");
+                return;
+            }
+
+            output.println("Таблицы базы данных:");
+            for (String table : tables) {
+                output.println(table);
+            }
+        } catch (DatabaseException e) {
+            output.println("Ошибка: " + e.getMessage());
+        }
     }
 
     private void showUnavailableSection(String name) {
