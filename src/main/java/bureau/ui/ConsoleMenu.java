@@ -11,11 +11,16 @@ public class ConsoleMenu {
     private final ConsoleInput input;
     private final PrintStream output;
     private final TableService tableService;
+    private final ClientMenu clientMenu;
+    private final OrderMenu orderMenu;
 
-    public ConsoleMenu(ConsoleInput input, PrintStream output, TableService tableService) {
+    public ConsoleMenu(ConsoleInput input, PrintStream output, TableService tableService,
+                       ClientMenu clientMenu, OrderMenu orderMenu) {
         this.input = input;
         this.output = output;
         this.tableService = tableService;
+        this.clientMenu = clientMenu;
+        this.orderMenu = orderMenu;
     }
 
     public void run() {
@@ -29,8 +34,8 @@ public class ConsoleMenu {
             }
 
             switch (choice.getAsInt()) {
-                case 1 -> showUnavailableSection("Клиенты");
-                case 2 -> showUnavailableSection("Заказы на перевод");
+                case 1 -> clientMenu.run();
+                case 2 -> orderMenu.run();
                 case 3 -> showUnavailableSection("Поиск заказов");
                 case 4 -> showUnavailableSection("Фильтрация и сортировка заказов");
                 case 5 -> showUnavailableSection("Статистика");
