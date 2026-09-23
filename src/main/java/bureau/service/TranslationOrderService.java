@@ -9,7 +9,9 @@ import bureau.repository.TranslationOrderRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 public class TranslationOrderService {
     private final TranslationOrderRepository orderRepository;
@@ -35,6 +37,58 @@ public class TranslationOrderService {
 
     public List<TranslationOrder> getAll() {
         return orderRepository.findAll();
+    }
+
+    public List<TranslationOrder> searchByTitle(String text) {
+        String query = prepareSearchText(text);
+        return orderRepository.findAll().stream()
+                .filter(order -> order.getTitle().toLowerCase(Locale.ROOT).contains(query))
+                .toList();
+    }
+
+    public List<TranslationOrder> searchByDescription(String text) {
+        String query = prepareSearchText(text);
+        return orderRepository.findAll().stream()
+                .filter(order -> order.getDescription() != null
+                        && order.getDescription().toLowerCase(Locale.ROOT).contains(query))
+                .toList();
+    }
+
+    public List<TranslationOrder> filter(OrderStatus status, Long clientId) {
+        if (clientId != null) {
+            clientService.getById(clientId);
+        }
+        return orderRepository.findAll().stream()
+                .filter(order -> status == null || order.getStatus() == status)
+                .filter(order -> clientId == null || order.getClientId() == clientId)
+                .toList();
+    }
+
+    public List<TranslationOrder> sortByDeadline(List<TranslationOrder> orders, boolean ascending) {
+        Comparator<TranslationOrder> comparator = Comparator.comparing(TranslationOrder::getDeadline);
+        if (!ascending) {
+            comparator = comparator.reversed();
+        }
+        return orders.stream()
+                .sorted(comparator.thenComparingLong(TranslationOrder::getId))
+                .toList();
+    }
+
+    public List<TranslationOrder> sortByPrice(List<TranslationOrder> orders, boolean ascending) {
+        Comparator<TranslationOrder> comparator = Comparator.comparing(TranslationOrder::getPrice);
+        if (!ascending) {
+            comparator = comparator.reversed();
+        }
+        return orders.stream()
+                .sorted(comparator.thenComparingLong(TranslationOrder::getId))
+                .toList();
+    }
+
+    private String prepareSearchText(String text) {
+        if (text == null || text.isBlank()) {
+            throw new BusinessException("Введите текст для поиска.");
+        }
+        return text.trim().toLowerCase(Locale.ROOT);
     }
 
     public TranslationOrder getById(long id) {

@@ -54,6 +54,85 @@ public class OrderMenu {
         }
     }
 
+    public void runSearch() {
+        while (true) {
+            output.println("\nПОИСК ЗАКАЗОВ");
+            output.println("1. По названию");
+            output.println("2. По описанию");
+            output.println("0. Назад");
+
+            try {
+                switch (input.readNumber("Выберите действие: ")) {
+                    case 1 -> showResults(orderService.searchByTitle(input.readText("Часть названия: ")));
+                    case 2 -> showResults(orderService.searchByDescription(input.readText("Часть описания: ")));
+                    case 0 -> { return; }
+                    default -> output.println("Ошибка: выберите пункт от 0 до 2.");
+                }
+            } catch (BusinessException | DatabaseException e) {
+                output.println("Ошибка: " + e.getMessage());
+            }
+        }
+    }
+
+    public void runFilters() {
+        while (true) {
+            output.println("\nФИЛЬТРАЦИЯ И СОРТИРОВКА");
+            output.println("1. По статусу");
+            output.println("2. По клиенту");
+            output.println("3. По статусу и клиенту");
+            output.println("4. Сортировать все заказы");
+            output.println("0. Назад");
+
+            try {
+                switch (input.readNumber("Выберите действие: ")) {
+                    case 1 -> showResults(orderService.filter(readStatus("Статус заказа: "), null));
+                    case 2 -> showResults(orderService.filter(null, input.readId("ID клиента: ")));
+                    case 3 -> {
+                        OrderStatus status = readStatus("Статус заказа: ");
+                        long clientId = input.readId("ID клиента: ");
+                        showResults(orderService.filter(status, clientId));
+                    }
+                    case 4 -> showResults(orderService.getAll());
+                    case 0 -> { return; }
+                    default -> output.println("Ошибка: выберите пункт от 0 до 4.");
+                }
+            } catch (BusinessException | DatabaseException e) {
+                output.println("Ошибка: " + e.getMessage());
+            }
+        }
+    }
+
+    private void showResults(List<TranslationOrder> orders) {
+        if (orders.isEmpty()) {
+            output.println("Заказы не найдены.");
+            return;
+        }
+
+        output.println("Найдено заказов: " + orders.size());
+        output.println("Сортировка:");
+        output.println("1. По сроку — сначала ближайшие");
+        output.println("2. По сроку — сначала поздние");
+        output.println("3. По стоимости — сначала дешёвые");
+        output.println("4. По стоимости — сначала дорогие");
+        output.println("0. Без сортировки");
+
+        while (true) {
+            int choice = input.readNumber("Выберите порядок: ");
+            switch (choice) {
+                case 0 -> showOrders(orders);
+                case 1 -> showOrders(orderService.sortByDeadline(orders, true));
+                case 2 -> showOrders(orderService.sortByDeadline(orders, false));
+                case 3 -> showOrders(orderService.sortByPrice(orders, true));
+                case 4 -> showOrders(orderService.sortByPrice(orders, false));
+                default -> {
+                    output.println("Ошибка: выберите пункт от 0 до 4.");
+                    continue;
+                }
+            }
+            return;
+        }
+    }
+
     private void create() {
         TranslationOrder order = orderService.create(readOrder(0, OrderStatus.NEW, null));
         output.println("Заказ добавлен со статусом «Новый». ID: " + order.getId());
@@ -65,6 +144,10 @@ public class OrderMenu {
             output.println("Заказов пока нет.");
             return;
         }
+        showOrders(orders);
+    }
+
+    private void showOrders(List<TranslationOrder> orders) {
         for (TranslationOrder order : orders) {
             output.printf("ID: %d | %s | Клиент: %d | %s → %s | %s | %s руб. | Срок: %s%n",
                     order.getId(), order.getTitle(), order.getClientId(), order.getSourceLanguage(),
@@ -99,16 +182,19 @@ public class OrderMenu {
     private void changeStatus() {
         long id = input.readId("ID заказа: ");
         showOrder(orderService.getById(id));
+        orderService.changeStatus(id, readStatus("Новый статус: "));
+        output.println("Статус изменён.");
+    }
+
+    private OrderStatus readStatus(String prompt) {
         OrderStatus[] statuses = OrderStatus.values();
         for (int i = 0; i < statuses.length; i++) {
             output.println((i + 1) + ". " + statuses[i].getTitle());
         }
         while (true) {
-            int choice = input.readNumber("Новый статус: ");
+            int choice = input.readNumber(prompt);
             if (choice >= 1 && choice <= statuses.length) {
-                orderService.changeStatus(id, statuses[choice - 1]);
-                output.println("Статус изменён.");
-                return;
+                return statuses[choice - 1];
             }
             output.println("Ошибка: выберите статус от 1 до " + statuses.length + ".");
         }

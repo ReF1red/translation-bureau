@@ -36,8 +36,8 @@ public class ConsoleMenu {
             switch (choice.getAsInt()) {
                 case 1 -> clientMenu.run();
                 case 2 -> orderMenu.run();
-                case 3 -> showUnavailableSection("Поиск заказов");
-                case 4 -> showUnavailableSection("Фильтрация и сортировка заказов");
+                case 3 -> orderMenu.runSearch();
+                case 4 -> orderMenu.runFilters();
                 case 5 -> showUnavailableSection("Статистика");
                 case 6 -> showUnavailableSection("Экспорт данных в Excel");
                 case 7 -> showTables();
