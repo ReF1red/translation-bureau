@@ -61,8 +61,8 @@ public class ClientService {
     }
 
     private void validate(Client client) {
-        client.setName(requiredText(client.getName(), "Имя клиента", 150));
-        String email = requiredText(client.getEmail(), "Email", 254).toLowerCase(Locale.ROOT);
+        client.setName(requiredText(client.getName(), "Имя клиента", 64));
+        String email = requiredText(client.getEmail(), "Email", 64).toLowerCase(Locale.ROOT);
         if (!email.matches("[^\\s@]+@[^\\s@]+\\.[^\\s@]+")) {
             throw new BusinessException("Укажите email в формате name@example.com.");
         }

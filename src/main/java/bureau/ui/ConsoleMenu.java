@@ -1,10 +1,15 @@
 package bureau.ui;
 
 import bureau.exception.DatabaseException;
+import bureau.exception.ExportException;
+import bureau.service.ExportService;
+import bureau.service.StatisticsService;
 import bureau.service.TableService;
 
 import java.io.PrintStream;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.OptionalInt;
 
 public class ConsoleMenu {
@@ -13,14 +18,19 @@ public class ConsoleMenu {
     private final TableService tableService;
     private final ClientMenu clientMenu;
     private final OrderMenu orderMenu;
+    private final StatisticsService statisticsService;
+    private final ExportService exportService;
 
     public ConsoleMenu(ConsoleInput input, PrintStream output, TableService tableService,
-                       ClientMenu clientMenu, OrderMenu orderMenu) {
+                       ClientMenu clientMenu, OrderMenu orderMenu,
+                       StatisticsService statisticsService, ExportService exportService) {
         this.input = input;
         this.output = output;
         this.tableService = tableService;
         this.clientMenu = clientMenu;
         this.orderMenu = orderMenu;
+        this.statisticsService = statisticsService;
+        this.exportService = exportService;
     }
 
     public void run() {
@@ -38,8 +48,8 @@ public class ConsoleMenu {
                 case 2 -> orderMenu.run();
                 case 3 -> orderMenu.runSearch();
                 case 4 -> orderMenu.runFilters();
-                case 5 -> showUnavailableSection("Статистика");
-                case 6 -> showUnavailableSection("Экспорт данных в Excel");
+                case 5 -> showStatistics();
+                case 6 -> exportData();
                 case 7 -> showTables();
                 case 0 -> {
                     output.println("До свидания!");
@@ -82,7 +92,24 @@ public class ConsoleMenu {
         }
     }
 
-    private void showUnavailableSection(String name) {
-        output.println("Раздел «" + name + "» пока не реализован.");
+    private void showStatistics() {
+        try {
+            Map<String, Long> statistics = statisticsService.getStatistics();
+            output.println("Статистика бюро переводов:");
+            for (Map.Entry<String, Long> entry : statistics.entrySet()) {
+                output.println(entry.getKey() + ": " + entry.getValue());
+            }
+        } catch (DatabaseException e) {
+            output.println("Ошибка: " + e.getMessage());
+        }
+    }
+
+    private void exportData() {
+        try {
+            Path file = exportService.export(Path.of("exports"));
+            output.println("Данные сохранены: " + file);
+        } catch (DatabaseException | ExportException e) {
+            output.println("Ошибка: " + e.getMessage());
+        }
     }
 }
