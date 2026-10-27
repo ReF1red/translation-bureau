@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="14" styleClass="page" fx:id="ordersPage"
+      fx:controller="bureau.fx.controller.OrdersController"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Label text="Заказы на перевод" styleClass="page-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="refreshButton" text="Обновить" onAction="#refresh"/>
+    </HBox>
+    <TableView fx:id="ordersTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="titleColumn" text="Название" prefWidth="230" minWidth="150"/>
+            <TableColumn fx:id="clientColumn" text="Клиент" prefWidth="180" minWidth="130"/>
+            <TableColumn fx:id="sourceLanguageColumn" text="Исходный язык" prefWidth="130"/>
+            <TableColumn fx:id="targetLanguageColumn" text="Язык перевода" prefWidth="135"/>
+            <TableColumn fx:id="wordCountColumn" text="Слов" prefWidth="70"/>
+            <TableColumn fx:id="priceColumn" text="Стоимость" prefWidth="140"/>
+            <TableColumn fx:id="statusColumn" text="Статус" prefWidth="130"/>
+            <TableColumn fx:id="deadlineColumn" text="Срок" prefWidth="110"/>
+            <TableColumn fx:id="createdAtColumn" text="Дата создания" prefWidth="170"/>
+        </columns>
+    </TableView>
+    <VBox spacing="6">
+        <Label text="Описание выбранного заказа"/>
+        <TextArea fx:id="descriptionArea" editable="false" wrapText="true" prefRowCount="2"/>
+    </VBox>
+    <Label fx:id="messageLabel" styleClass="subtitle"/>
+</VBox>

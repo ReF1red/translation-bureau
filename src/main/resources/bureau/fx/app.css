@@ -1,0 +1,101 @@
+.root {
+    -fx-font-family: "System";
+    -fx-font-size: 14px;
+    -fx-background-color: #f3f5f8;
+    -fx-text-base-color: #243247;
+}
+
+.header {
+    -fx-padding: 20 24;
+    -fx-background-color: white;
+}
+
+.app-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.subtitle {
+    -fx-text-fill: #536278;
+}
+
+.page {
+    -fx-padding: 20 24;
+}
+
+.page-title {
+    -fx-font-size: 19px;
+    -fx-font-weight: bold;
+}
+
+.tab-pane > .tab-header-area {
+    -fx-padding: 8 20 0 20;
+}
+
+.tab {
+    -fx-padding: 8 18;
+}
+
+.button {
+    -fx-padding: 8 18;
+    -fx-background-color: #285fa8;
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #204e8a;
+}
+
+.button:focused {
+    -fx-border-color: #133563;
+    -fx-border-width: 2;
+    -fx-border-radius: 5;
+}
+
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #d4dce6;
+    -fx-fixed-cell-size: 38;
+}
+
+.table-view .column-header,
+.table-view .filler {
+    -fx-background-color: #e8edf4;
+    -fx-size: 40;
+}
+
+.table-view .table-cell {
+    -fx-alignment: CENTER_LEFT;
+}
+
+.text-area {
+    -fx-border-color: #d4dce6;
+}
+
+.text-field {
+    -fx-padding: 8 10;
+    -fx-background-color: white;
+    -fx-border-color: #d4dce6;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.text-field:focused {
+    -fx-border-color: #285fa8;
+}
+
+.stat-card {
+    -fx-background-color: white;
+    -fx-padding: 20;
+    -fx-border-color: #d4dce6;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+}
+
+.stat-value {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #285fa8;
+}

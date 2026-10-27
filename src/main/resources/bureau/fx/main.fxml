@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:controller="bureau.fx.controller.MainController"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+    <top>
+        <VBox spacing="4" styleClass="header">
+            <Label text="Бюро переводов" styleClass="app-title"/>
+            <Label text="Клиенты и заказы на перевод" styleClass="subtitle"/>
+        </VBox>
+    </top>
+    <center>
+        <TabPane fx:id="tabs" tabClosingPolicy="UNAVAILABLE">
+            <tabs>
+                <Tab text="Заказы">
+                    <content><fx:include fx:id="ordersView" source="orders.fxml"/></content>
+                </Tab>
+                <Tab text="Клиенты">
+                    <content><fx:include fx:id="clientsView" source="clients.fxml"/></content>
+                </Tab>
+                <Tab text="Статистика">
+                    <content><fx:include fx:id="statisticsView" source="statistics.fxml"/></content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </center>
+</BorderPane>
