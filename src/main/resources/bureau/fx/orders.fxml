@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
@@ -21,6 +23,30 @@
         <Button fx:id="deleteButton" text="Удалить" onAction="#delete"/>
         <Button fx:id="refreshButton" text="Обновить" onAction="#refresh"/>
     </HBox>
+    <VBox fx:id="filtersBox" spacing="12">
+        <VBox spacing="6">
+            <Label text="Поиск по названию и описанию"/>
+            <HBox spacing="12">
+                <TextField fx:id="searchField" promptText="Введите часть названия или описания"
+                           HBox.hgrow="ALWAYS"/>
+                <Button fx:id="resetButton" text="Сбросить" onAction="#resetFilters"/>
+            </HBox>
+        </VBox>
+        <HBox spacing="12">
+            <VBox spacing="6" prefWidth="200" minWidth="160" HBox.hgrow="ALWAYS">
+                <Label text="Статус"/>
+                <ComboBox fx:id="statusFilter" maxWidth="Infinity" onAction="#applyFilters"/>
+            </VBox>
+            <VBox spacing="6" prefWidth="360" minWidth="200" HBox.hgrow="ALWAYS">
+                <Label text="Клиент"/>
+                <ComboBox fx:id="clientFilter" maxWidth="Infinity" onAction="#applyFilters"/>
+            </VBox>
+            <VBox spacing="6" prefWidth="300" minWidth="230" HBox.hgrow="ALWAYS">
+                <Label text="Сортировка"/>
+                <ComboBox fx:id="sortBox" maxWidth="Infinity" onAction="#applyFilters"/>
+            </VBox>
+        </HBox>
+    </VBox>
     <TableView fx:id="ordersTable" VBox.vgrow="ALWAYS">
         <columns>
             <TableColumn fx:id="titleColumn" text="Название" prefWidth="230" minWidth="150"/>
@@ -38,5 +64,8 @@
         <Label text="Описание выбранного заказа"/>
         <TextArea fx:id="descriptionArea" editable="false" wrapText="true" prefRowCount="2"/>
     </VBox>
-    <Label fx:id="messageLabel" styleClass="subtitle"/>
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Label fx:id="messageLabel" styleClass="subtitle" wrapText="true" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+        <Button fx:id="exportButton" text="Экспорт Excel" onAction="#exportOrders"/>
+    </HBox>
 </VBox>

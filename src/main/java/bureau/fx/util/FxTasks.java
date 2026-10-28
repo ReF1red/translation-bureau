@@ -2,6 +2,7 @@ package bureau.fx.util;
 
 import bureau.exception.BusinessException;
 import bureau.exception.DatabaseException;
+import bureau.exception.ExportException;
 import javafx.concurrent.Task;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -50,6 +51,7 @@ public class FxTasks {
         System.getLogger(FxTasks.class.getName()).log(System.Logger.Level.WARNING,
                 "Ошибка выполнения операции", error);
         String message = error instanceof DatabaseException || error instanceof BusinessException
+                || error instanceof ExportException
                 ? error.getMessage() : "Не удалось выполнить операцию. Повторите попытку.";
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.initOwner(owner);

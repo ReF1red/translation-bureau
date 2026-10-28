@@ -64,6 +64,18 @@ public class TranslationOrderService {
                 .toList();
     }
 
+    public List<TranslationOrder> searchAndFilter(List<TranslationOrder> orders, String text,
+                                                 OrderStatus status, Long clientId) {
+        String query = text == null ? "" : text.trim().toLowerCase(Locale.ROOT);
+        return orders.stream()
+                .filter(order -> query.isEmpty() || order.getTitle().toLowerCase(Locale.ROOT).contains(query)
+                        || (order.getDescription() != null
+                        && order.getDescription().toLowerCase(Locale.ROOT).contains(query)))
+                .filter(order -> status == null || order.getStatus() == status)
+                .filter(order -> clientId == null || order.getClientId() == clientId)
+                .toList();
+    }
+
     public List<TranslationOrder> sortByDeadline(List<TranslationOrder> orders, boolean ascending) {
         Comparator<TranslationOrder> comparator = Comparator.comparing(TranslationOrder::getDeadline);
         if (!ascending) {

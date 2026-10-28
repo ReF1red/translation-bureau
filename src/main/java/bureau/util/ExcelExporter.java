@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -22,15 +24,7 @@ import java.util.List;
 public class ExcelExporter {
     public Path export(List<Client> clients, List<TranslationOrder> orders, Path directory) throws IOException {
         try (Workbook workbook = new XSSFWorkbook()) {
-            CellStyle headerStyle = workbook.createCellStyle();
-            Font font = workbook.createFont();
-            font.setBold(true);
-            headerStyle.setFont(font);
-            headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-
-            writeClients(workbook, clients, headerStyle);
-            writeOrders(workbook, orders, headerStyle);
+            fillWorkbook(workbook, clients, orders);
 
             Files.createDirectories(directory);
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
@@ -47,6 +41,41 @@ public class ExcelExporter {
             }
             return file.toAbsolutePath();
         }
+    }
+
+    public Path exportToFile(List<Client> clients, List<TranslationOrder> orders, Path file) throws IOException {
+        Path target = file.toAbsolutePath();
+        Path temporary = null;
+        try {
+            try (Workbook workbook = new XSSFWorkbook()) {
+                fillWorkbook(workbook, clients, orders);
+                temporary = Files.createTempFile(target.getParent(), ".translation-bureau-", ".tmp");
+                try (OutputStream output = Files.newOutputStream(temporary)) {
+                    workbook.write(output);
+                }
+            }
+            try {
+                Files.move(temporary, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING);
+            }
+            return target;
+        } finally {
+            if (temporary != null) {
+                Files.deleteIfExists(temporary);
+            }
+        }
+    }
+
+    private void fillWorkbook(Workbook workbook, List<Client> clients, List<TranslationOrder> orders) {
+        CellStyle headerStyle = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setBold(true);
+        headerStyle.setFont(font);
+        headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        writeClients(workbook, clients, headerStyle);
+        writeOrders(workbook, orders, headerStyle);
     }
 
     private void writeClients(Workbook workbook, List<Client> clients, CellStyle headerStyle) {

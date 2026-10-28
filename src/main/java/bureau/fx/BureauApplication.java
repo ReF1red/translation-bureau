@@ -24,7 +24,8 @@ public class BureauApplication extends Application {
                 return new ClientsController(services.getClientService());
             }
             if (type == OrdersController.class) {
-                return new OrdersController(services.getOrderService(), services.getClientService());
+                return new OrdersController(services.getOrderService(), services.getClientService(),
+                        services.getExportService());
             }
             if (type == StatisticsController.class) {
                 return new StatisticsController(services.getStatisticsService());
@@ -37,7 +38,7 @@ public class BureauApplication extends Application {
         scene.getStylesheets().add(getClass().getResource("/bureau/fx/app.css").toExternalForm());
         stage.setTitle("Бюро переводов");
         stage.setMinWidth(900);
-        stage.setMinHeight(560);
+        stage.setMinHeight(640);
         stage.setScene(scene);
         stage.show();
     }

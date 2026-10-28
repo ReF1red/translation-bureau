@@ -40,12 +40,20 @@ public class FxDialogs {
     }
 
     public static boolean confirmDelete(Window owner, String message) {
-        ButtonType delete = new ButtonType("Удалить", ButtonBar.ButtonData.OK_DONE);
+        return confirm(owner, "Подтверждение удаления", message, "Удалить");
+    }
+
+    public static boolean confirmReplace(Window owner, String fileName) {
+        return confirm(owner, "Сохранение файла", "Файл «" + fileName + "» уже существует. Заменить его?", "Заменить");
+    }
+
+    private static boolean confirm(Window owner, String title, String message, String actionText) {
+        ButtonType action = new ButtonType(actionText, ButtonBar.ButtonData.OK_DONE);
         ButtonType cancel = new ButtonType("Отмена", ButtonBar.ButtonData.CANCEL_CLOSE);
-        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, message, delete, cancel);
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, message, action, cancel);
         confirmation.initOwner(owner);
-        confirmation.setTitle("Подтверждение удаления");
+        confirmation.setTitle(title);
         confirmation.setHeaderText(null);
-        return confirmation.showAndWait().orElse(cancel) == delete;
+        return confirmation.showAndWait().orElse(cancel) == action;
     }
 }
