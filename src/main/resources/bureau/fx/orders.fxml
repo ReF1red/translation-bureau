@@ -15,6 +15,10 @@
     <HBox alignment="CENTER_LEFT" spacing="12">
         <Label text="Заказы на перевод" styleClass="page-title"/>
         <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="addButton" text="Добавить" onAction="#add"/>
+        <Button fx:id="editButton" text="Изменить" onAction="#edit"/>
+        <Button fx:id="statusButton" text="Статус" onAction="#changeStatus"/>
+        <Button fx:id="deleteButton" text="Удалить" onAction="#delete"/>
         <Button fx:id="refreshButton" text="Обновить" onAction="#refresh"/>
     </HBox>
     <TableView fx:id="ordersTable" VBox.vgrow="ALWAYS">

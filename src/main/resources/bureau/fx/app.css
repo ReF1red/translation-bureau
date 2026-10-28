@@ -86,6 +86,11 @@
     -fx-border-color: #285fa8;
 }
 
+.order-status {
+    -fx-padding: 8 0;
+    -fx-font-weight: bold;
+}
+
 .stat-card {
     -fx-background-color: white;
     -fx-padding: 20;

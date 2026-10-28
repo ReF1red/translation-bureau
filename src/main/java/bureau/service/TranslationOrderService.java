@@ -122,10 +122,22 @@ public class TranslationOrderService {
         }
     }
 
-    public void changeStatus(long id, OrderStatus status) {
+    public TranslationOrder changeStatus(long id, OrderStatus status) {
         TranslationOrder order = getById(id);
         order.setStatus(status);
         update(order);
+        return order;
+    }
+
+    public List<OrderStatus> getAllowedNextStatuses(OrderStatus status) {
+        if (status == null) {
+            throw new BusinessException("Статус заказа не указан.");
+        }
+        return switch (status) {
+            case NEW -> List.of(OrderStatus.IN_PROGRESS, OrderStatus.CANCELLED);
+            case IN_PROGRESS -> List.of(OrderStatus.COMPLETED, OrderStatus.CANCELLED);
+            case COMPLETED, CANCELLED -> List.of();
+        };
     }
 
     public void delete(long id) {
@@ -171,10 +183,7 @@ public class TranslationOrderService {
         if (from == to) {
             return;
         }
-        if (from == OrderStatus.NEW && (to == OrderStatus.IN_PROGRESS || to == OrderStatus.CANCELLED)) {
-            return;
-        }
-        if (from == OrderStatus.IN_PROGRESS && (to == OrderStatus.COMPLETED || to == OrderStatus.CANCELLED)) {
+        if (getAllowedNextStatuses(from).contains(to)) {
             return;
         }
         throw new BusinessException("Нельзя изменить статус «" + from.getTitle() + "» на «" + to.getTitle() + "».");

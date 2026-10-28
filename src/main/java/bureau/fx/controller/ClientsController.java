@@ -1,26 +1,17 @@
 package bureau.fx.controller;
 
+import bureau.fx.util.FxDialogs;
 import bureau.fx.util.FxTasks;
 import bureau.model.Client;
 import bureau.service.ClientService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-
-import java.io.IOException;
 
 public class ClientsController {
     private final ClientService clientService;
@@ -79,27 +70,9 @@ public class ClientsController {
 
     private void showForm(Client client) {
         ClientFormController controller = new ClientFormController(clientService, client, this::clientSaved);
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/bureau/fx/client-form.fxml"));
-        loader.setControllerFactory(type -> controller);
-        try {
-            Parent root = loader.load();
-            Scene scene = new Scene(root);
-            scene.getStylesheets().addAll(clientsTable.getScene().getStylesheets());
-            Stage dialog = new Stage();
-            dialog.initOwner(clientsTable.getScene().getWindow());
-            dialog.initModality(Modality.WINDOW_MODAL);
-            dialog.setTitle(client == null ? "Новый клиент" : "Редактирование клиента");
-            dialog.setResizable(false);
-            dialog.setScene(scene);
-            dialog.setOnCloseRequest(event -> {
-                if (controller.isSaving()) {
-                    event.consume();
-                }
-            });
-            dialog.show();
-        } catch (IOException e) {
-            FxTasks.showError(clientsTable.getScene().getWindow(), e);
-        }
+        FxDialogs.showForm(clientsTable.getScene().getWindow(),
+                client == null ? "Новый клиент" : "Редактирование клиента",
+                "/bureau/fx/client-form.fxml", controller, controller::isSaving);
     }
 
     private void clientSaved(Client saved) {
@@ -127,14 +100,8 @@ public class ClientsController {
         if (selected == null) {
             return;
         }
-        ButtonType delete = new ButtonType("Удалить", ButtonBar.ButtonData.OK_DONE);
-        ButtonType cancel = new ButtonType("Отмена", ButtonBar.ButtonData.CANCEL_CLOSE);
-        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION,
-                "Удалить клиента «" + selected.getName() + "»?", delete, cancel);
-        confirmation.initOwner(clientsTable.getScene().getWindow());
-        confirmation.setTitle("Удаление клиента");
-        confirmation.setHeaderText(null);
-        if (confirmation.showAndWait().orElse(cancel) != delete) {
+        if (!FxDialogs.confirmDelete(clientsTable.getScene().getWindow(),
+                "Удалить клиента «" + selected.getName() + "»?")) {
             return;
         }
 
